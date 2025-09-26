@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convite Vanessa & Ítalo</title>
+<style>
+body {
+  margin: 0;
+  background: #f5f0e6; /* bege */
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+/* corações */
+.hearts {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+.heart {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background-color: #8b4513;
+  transform: rotate(45deg);
+  animation: float 10s linear infinite;
+}
+.heart:before,
+.heart:after {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background-color: #8b4513;
+  border-radius: 50%;
+}
+.heart:before {
+  top: -7.5px;
+  left: 0;
+}
+.heart:after {
+  left: -7.5px;
+  top: 0;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(45deg); opacity: 0;}
+  10% {opacity:1;}
+  100% { transform: translateY(-10vh) rotate(45deg); opacity: 0;}
+}
+
+/* texto acima do cubo */
+.hint {
+  position: absolute;
+  top: 6vh;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(0,0,0,0.7);
+  font-size: 1rem;
+  text-align: center;
+  z-index: 45;
+  pointer-events: none;
+  max-width: 90%;
+  line-height: 1.4em;
+}
+@media (max-width: 480px) {
+  .hint {
+    font-size: 0.9rem;
+    top: 3vh;
+  }
+}
+
+/* cubo */
+.scene {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  perspective: 600px;
+  z-index: 10;
+}
+.cube-face {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: #a0522d; /* marrom */
+  border: 2px solid #8b4513;
+  box-sizing: border-box;
+}
+.front  { transform: rotateY(  0deg) translateZ(100px);}
+.back   { transform: rotateY(180deg) translateZ(100px);}
+.right  { transform: rotateY( 90deg) translateZ(100px);}
+.left   { transform: rotateY(-90deg) translateZ(100px);}
+.top    { transform: rotateX( 90deg) translateZ(100px);}
+.bottom { transform: rotateX(-90deg) translateZ(100px);}
+
+/* animação de rotação do cubo */
+.rotate {
+  animation: spin 10s linear infinite;
+  transform-style: preserve-3d;
+}
+@keyframes spin {
+  0% { transform: rotateX(0deg) rotateY(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+/* convite aberto */
+.convite {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #f5f0e6;
+  border: 3px solid #8b4513;
+  padding: 20px;
+  text-align: center;
+  z-index: 100;
+  width: 80%;
+  max-width: 400px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+.convite h1 {
+  color: #8b4513;
+  margin-top: 0;
+}
+.rsvp-button {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 15px;
+  background: #8b4513;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+}
+.rsvp-button:hover {
+  background: #a0522d;
+}
+</style>
+</head>
+<body>
+
+<!-- corações -->
+<div class="hearts" aria-hidden="true" id="hearts"></div>
+
+<!-- texto acima do cubo -->
+<div class="hint" id="hint">Clique no cubo para abrir o convite</div>
+
+<!-- cubo (classe rotate para girar) -->
+<div class="scene rotate" id="cubo" title="Clique para abrir o convite">
+  <div class="cube-face front"></div>
+  <div class="cube-face back"></div>
+  <div class="cube-face right"></div>
+  <div class="cube-face left"></div>
+  <div class="cube-face top"></div>
+  <div class="cube-face bottom"></div>
+</div>
+
+<!-- convite -->
+<div class="convite" id="convite">
+  <h1>Vanessa & Ítalo</h1>
+  <p>estamos muito felizes em convidar você para a celebração de nossa união civil</p>
+  <p><strong>Data:</strong> 24 de outubro</p>
+  <p><strong>Horário:</strong> a partir das 13h</p>
+  <p><strong>Local:</strong>Rua barão de Santo Ângelo nº9 (Estacionamento do DMAE), Moinhos de Vento</p>
+  <a class="rsvp-button" href="https://wa.me/5192150029" target="_blank" rel="noopener">Confirmar Presença</a>
+</div>
+
+<audio id="musica" src="musica.mp3" preload="auto"></audio>
+
+<script>
+// gerar corações aleatórios
+for (let i=0;i<20;i++){
+  const heart = document.createElement('div');
+  heart.classList.add('heart');
+  heart.style.left = Math.random()*100+'%';
+  heart.style.animationDuration = (5+Math.random()*5)+'s';
+  heart.style.opacity = Math.random();
+  document.getElementById('hearts').appendChild(heart);
+}
+
+// ação do cubo
+const cubo = document.getElementById('cubo');
+const convite = document.getElementById('convite');
+const musica = document.getElementById('musica');
+
+cubo.addEventListener('click', () => {
+  // para animação do cubo e oculta
+  cubo.classList.remove('rotate');
+  cubo.style.display='none';
+  document.getElementById('hint').style.display='none';
+  convite.style.display='block';
+  musica.play().catch(()=>{}); // inicia música
+});
+</script>
+
+</body>
+</html>
